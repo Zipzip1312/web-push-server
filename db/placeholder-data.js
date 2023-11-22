@@ -8,21 +8,15 @@ const users = [
   },
 ];
 
-const messages = [
+const subscriptions = [
   {
-    id: '3958dc9e-712f-4377-85e9-fec4b6a6442a',
-    text: 'Delba de Oliveira',
-    status: 'STATUS'
-  },
-  {
-    id: '3958dc9e-742f-4377-85e9-fec4b6a6442a',
-    text: 'Lee Robinson',
-    status: 'STATUS'
-  },
-  {
-    id: '3958dc9e-737f-4377-85e9-fec4b6a6442a',
-    text: 'Hector Simpson',
-    status: 'STATUS'
-  }];
+    endpoint: "https://fcm.googleapis.com/fcm/send/dH2fr21fwc0:APA91bEDSPvN0KHZN_wva3mYKWX_7p-38u_Htg7L6yYEf4VQIRh629laWhkpCSQzw52HL7tXUb1jsrrmud_xr0QYOZChHQdavFxKwTZhkUcHBP7sDANCuCi458ATnFdhNMbkYCpJpVj-",
+    expirationTime: null,
+    keys: {
+      p256dh: "BMg5VRdUc2rLOI2ep_Oy9nYDgcj3aL4o4a-GKYPUCu7XPlSe1lCXqZX5d-joj4OfWe8VMA-27_UnydcRxGDW-FQ",
+      auth: "yQEhTdes4Z4t_Fr2hrUe-w"
+    }
+  }
+];
 
-module.exports = { users, messages };
+module.exports = { users, subscriptions };

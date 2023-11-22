@@ -1,8 +1,11 @@
 const { sql } = require('@vercel/postgres');
-const { messages, users } = require('../db/placeholder-data.js');
+const { users, subscriptions } = require('../db/placeholder-data.js');
 
 async function seedUsers() {
   try {
+    const dropTable = await sql`DROP TABLE IF EXISTS users`;
+    console.log(`Dropped "users" table`);
+
     await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
     // Create the "messages" table if it doesn't exist
     const createTable = await sql`
@@ -29,6 +32,7 @@ async function seedUsers() {
     console.log(`Seeded ${insertedUsers.length} users`);
 
     return {
+      dropTable,
       createTable,
       users: insertedUsers,
     };
@@ -38,47 +42,51 @@ async function seedUsers() {
   }
 }
 
-async function seedMessages() {
+async function seedSubscriptions() {
   try {
+    const dropTable = await sql`DROP TABLE IF EXISTS subscriptions`;
+    console.log(`Dropped "subscriptions" table`);
+
     await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
-    // Create the "messages" table if it doesn't exist
+    // Create the "subscriptions" table if it doesn't exist
     const createTable = await sql`
-    CREATE TABLE IF NOT EXISTS messages (
+    CREATE TABLE IF NOT EXISTS subscriptions (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    text TEXT NOT NULL,
-    status VARCHAR(255) NOT NULL,
-    date DATE NOT NULL
+    endpoint TEXT NOT NULL,
+    expirationTime timestamp,
+    keys JSON NOT NULL
   );
 `;
 
-    console.log(`Created "messages" table`);
+    console.log(`Created "subscriptions" table`);
 
-    // Insert data into the "messages" table
-    const insertedMessages = [];
-    for (const message of messages) {
-      insertedMessages.push(
+    // Insert data into the "subscriptions" table
+    const insertedSubscriptions = [];
+    for (const sub of subscriptions) {
+      insertedSubscriptions.push(
         await sql`
-        INSERT INTO messages (text, status, date)
-        VALUES (${message.text}, ${message.status || 'no status'}, ${message.date || new Date()})
+        INSERT INTO subscriptions (endpoint, expirationTime, keys)
+        VALUES (${sub.endpoint}, ${sub.expirationTime}, ${sub.keys})
         ON CONFLICT (id) DO NOTHING;
       `,
       );
     }
 
-    console.log(`Seeded ${insertedMessages.length} messages`);
+    console.log(`Seeded ${insertedSubscriptions.length} subscriptions`);
 
     return {
+      dropTable,
       createTable,
-      messages: insertedMessages,
+      subscriptions: insertedSubscriptions,
     };
   } catch (error) {
-    console.error('Error seeding messages:', error);
+    console.error('Error seeding subscriptions:', error);
     throw error;
   }
 }
 
 (async () => {
   await seedUsers();
-  await seedMessages();
+  await seedSubscriptions();
 })();

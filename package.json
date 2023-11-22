@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "node -r dotenv/config ./scripts/seed.js"
+    "seed": "node -r dotenv/config ./scripts/seed.js",
+    "drop": "node -r dotenv/config ./scripts/drop.js"
   },
   "dependencies": {
     "@vercel/postgres": "^0.5.1",

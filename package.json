@@ -2,6 +2,7 @@
   "name": "web-push-notifications",
   "version": "0.1.0",
   "private": true,
+  "live-url": "https://web-push-server-silk.vercel.app/",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

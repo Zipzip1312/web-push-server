@@ -10,11 +10,11 @@ const users = [
 
 const subscriptions = [
   {
-    endpoint: "https://fcm.googleapis.com/fcm/send/dH2fr21fwc0:APA91bEDSPvN0KHZN_wva3mYKWX_7p-38u_Htg7L6yYEf4VQIRh629laWhkpCSQzw52HL7tXUb1jsrrmud_xr0QYOZChHQdavFxKwTZhkUcHBP7sDANCuCi458ATnFdhNMbkYCpJpVj-",
+    endpoint: "https://fcm.googleapis.com/fcm/send/fGjqNe7BFH0:APA91bEGhBwH7Mw70u5AaO5Qe0gP5cRXsVVKLX2tT52rt61lpiBRyanNhFSWb-g89MFEGadHoyGjJwoNCh4ume6HMNiaBA0q4g3xf2fyCt1Enc0G-_-t7ofRvot9iqFNPc53UMrA5X3G",
     expirationTime: null,
     keys: {
-      p256dh: "BMg5VRdUc2rLOI2ep_Oy9nYDgcj3aL4o4a-GKYPUCu7XPlSe1lCXqZX5d-joj4OfWe8VMA-27_UnydcRxGDW-FQ",
-      auth: "yQEhTdes4Z4t_Fr2hrUe-w"
+      p256dh: "BJ2wYMC7SA7W7XyhOymzrrT3L413grZfo6ihEfdA0w9xXp1Z1Qa-GspB1--HaUCZsEG4tbRNO8ep9gtYw6X-tZM",
+      auth: "DV5Ev8ctw2xbVjNu8CS7bw"
     }
   }
 ];

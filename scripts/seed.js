@@ -64,13 +64,13 @@ async function seedSubscriptions() {
     // Insert data into the "subscriptions" table
     const insertedSubscriptions = [];
     for (const sub of subscriptions) {
-      insertedSubscriptions.push(
-        await sql`
-        INSERT INTO subscriptions (endpoint, expirationTime, keys)
-        VALUES (${sub.endpoint}, ${sub.expirationTime}, ${sub.keys})
-        ON CONFLICT (id) DO NOTHING;
-      `,
-      );
+      // insertedSubscriptions.push(
+      //   await sql`
+      //   INSERT INTO subscriptions (endpoint, expirationTime, keys)
+      //   VALUES (${sub.endpoint}, ${sub.expirationTime}, ${sub.keys})
+      //   ON CONFLICT (id) DO NOTHING;
+      // `,
+      // );
     }
 
     console.log(`Seeded ${insertedSubscriptions.length} subscriptions`);

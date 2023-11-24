@@ -9,6 +9,10 @@ export async function POST(request: Request) {
   try {
     const subscription = await request.json();
 
+    if (!subscription.endpoint) {
+      throw "Subscription must have the endpoint!";
+    }
+
     await sql`
         INSERT INTO subscriptions (endpoint, expirationTime, keys)
         VALUES (${subscription.endpoint}, ${subscription.expirationTime}, ${subscription.keys})

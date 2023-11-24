@@ -1,6 +1,8 @@
 const { sql } = require('@vercel/postgres');
 const { users, subscriptions } = require('../db/placeholder-data.js');
 
+const seed = false;
+
 async function seedUsers() {
   try {
     const dropTable = await sql`DROP TABLE IF EXISTS users`;
@@ -18,24 +20,24 @@ async function seedUsers() {
 
     console.log(`Created "users" table`);
 
-    // Insert data into the "users" table
-    const insertedUsers = await Promise.all(
-      users.map(async user => {
-        return sql`
-        INSERT INTO users (id, name, data)
-        VALUES (${user.id}, ${user.name}, ${user.data})
-        ON CONFLICT (id) DO NOTHING;
-      `;
-      }),
-    );
+    let insertedUsers = [];
 
-    console.log(`Seeded ${insertedUsers.length} users`);
+    if (seed) {
+      // Insert data into the "users" table
+      insertedUsers = await Promise.all(
+        users.map(async user => {
+          return sql`
+          INSERT INTO users (id, name, data)
+          VALUES (${user.id}, ${user.name}, ${user.data})
+          ON CONFLICT (id) DO NOTHING;
+        `;
+        }),
+      );
 
-    return {
-      dropTable,
-      createTable,
-      users: insertedUsers,
-    };
+      console.log(`Seeded ${insertedUsers.length} users`);
+    }
+
+    return { dropTable, createTable };
   } catch (error) {
     console.error('Error seeding users:', error);
     throw error;
@@ -61,25 +63,20 @@ async function seedSubscriptions() {
 
     console.log(`Created "subscriptions" table`);
 
-    // Insert data into the "subscriptions" table
     const insertedSubscriptions = [];
-    for (const sub of subscriptions) {
-      // insertedSubscriptions.push(
-      //   await sql`
-      //   INSERT INTO subscriptions (endpoint, expirationTime, keys)
-      //   VALUES (${sub.endpoint}, ${sub.expirationTime}, ${sub.keys})
-      //   ON CONFLICT (id) DO NOTHING;
-      // `,
-      // );
+    if (seed) {
+      // Insert data into the "subscriptions" table
+      for (const sub of subscriptions) {
+        insertedSubscriptions.push(await sql`
+        INSERT INTO subscriptions (endpoint, expirationTime, keys)
+        VALUES (${sub.endpoint}, ${sub.expirationTime}, ${sub.keys})
+        ON CONFLICT (id) DO NOTHING;`,);
+      }
+
+      console.log(`Seeded ${insertedSubscriptions.length} subscriptions`);
     }
 
-    console.log(`Seeded ${insertedSubscriptions.length} subscriptions`);
-
-    return {
-      dropTable,
-      createTable,
-      subscriptions: insertedSubscriptions,
-    };
+    return { dropTable, createTable };
   } catch (error) {
     console.error('Error seeding subscriptions:', error);
     throw error;

@@ -29,13 +29,12 @@ export async function POST(request: Request) {
 
 export async function GET(request: NextRequest) {
   try {
-    const message = 'NO MESSAGE';
-    console.log('REQUEST: ', request);
-
+    const url = new URL(request.url);
+    const message = url?.searchParams?.get('message');
     const subscriptions = await db.selectFrom('subscriptions').selectAll().execute()
 
     for (let i = 0; i < subscriptions.length; i++) {
-      await triggerNotification(subscriptions[i], message)
+      await triggerNotification(subscriptions[i], message || 'NO MESSAGE REQUESTED')
     }
 
     return NextResponse.json({ success: true, recipients: subscriptions.length, message });

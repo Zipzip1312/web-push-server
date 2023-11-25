@@ -48,11 +48,13 @@ async function triggerNotification(subscription: any, message: string) {
   return webpush.sendNotification(subscription, JSON.stringify({
     notification: {
       title: message,
+      message: 'Натисніть, щоб перейти в Табель',
+      icon: 'https://epicentrk.ua/upload/medialibrary/659/apple_touch_icon.png',
       data: {
         onActionClick: {
           default: {
             operation: "openWindow",
-            url: "http://localhost:3000/"
+            url: "https://portal-qa4.epicentrk.ua/unit-timesheet/table?unitId=48&period=2023-11&customUserListId=-1&customUserGroupId=-1&includeServiceCard=false&tableType=plan&search=&departmentId=2&subDepartmentId=0"
           }
         }
       }

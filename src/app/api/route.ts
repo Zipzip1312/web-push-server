@@ -10,13 +10,19 @@ export async function POST(request: Request) {
   try {
     const subscription = await request.json();
 
-    if (!subscription.endpoint) {
+    if (!subscription?.endpoint) {
       throw "Subscription must have endpoint.";
     }
 
+    if (!subscription?.userId || !subscription?.userName) {
+      throw "No User Data provided!";
+    }
+
+    const { userId, userName, endpoint, expirationTime, keys } = subscription;
+
     await sql`
-        INSERT INTO subscriptions (endpoint, expirationTime, keys)
-        VALUES (${subscription.endpoint}, ${subscription.expirationTime}, ${subscription.keys})
+        INSERT INTO subscriptions (userId, userName, endpoint, expirationTime, keys)
+        VALUES (${userId}, ${userName}, ${endpoint}, ${expirationTime}, ${keys})
         ON CONFLICT (id) DO NOTHING;
       `
 
@@ -33,18 +39,22 @@ export async function GET(request: NextRequest) {
     const message = url?.searchParams?.get('message');
     const subscriptions = await db.selectFrom('subscriptions').selectAll().execute()
 
-    for (let i = 0; i < subscriptions.length; i++) {
-      await triggerNotification(subscriptions[i], message || 'NO MESSAGE REQUESTED')
+    if (message) {
+      for (let i = 0; i < subscriptions.length; i++) {
+        await sendNotification(subscriptions[i], message)
+      }
+
+      return NextResponse.json({ success: true, recipients: subscriptions.length, message });
     }
 
-    return NextResponse.json({ success: true, recipients: subscriptions.length, message });
+    return NextResponse.json({ success: true, subscriptions });
   } catch (err) {
     console.log(err);
     return NextResponse.json({ message: err, success: false });
   }
 }
 
-async function triggerNotification(subscription: any, message: string) {
+async function sendNotification(subscription: any, message: string) {
   return webpush.sendNotification(subscription, JSON.stringify({
     notification: {
       title: message,

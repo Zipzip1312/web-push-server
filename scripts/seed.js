@@ -1,51 +1,11 @@
 const { sql } = require('@vercel/postgres');
-const { users, subscriptions } = require('../db/placeholder-data.js');
+const { subscriptions } = require('../db/placeholder-data.js');
 
-const seed = false;
-
-async function seedUsers() {
-  try {
-    const dropTable = await sql`DROP TABLE IF EXISTS users`;
-    console.log(`Dropped "users" table`);
-
-    await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-    // Create the "messages" table if it doesn't exist
-    const createTable = await sql`
-      CREATE TABLE IF NOT EXISTS users (
-        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        data TEXT NOT NULL UNIQUE
-      );
-    `;
-
-    console.log(`Created "users" table`);
-
-    let insertedUsers = [];
-
-    if (seed) {
-      // Insert data into the "users" table
-      insertedUsers = await Promise.all(
-        users.map(async user => {
-          return sql`
-          INSERT INTO users (id, name, data)
-          VALUES (${user.id}, ${user.name}, ${user.data})
-          ON CONFLICT (id) DO NOTHING;
-        `;
-        }),
-      );
-
-      console.log(`Seeded ${insertedUsers.length} users`);
-    }
-
-    return { dropTable, createTable };
-  } catch (error) {
-    console.error('Error seeding users:', error);
-    throw error;
-  }
-}
+const seed = true;
 
 async function seedSubscriptions() {
   try {
+
     const dropTable = await sql`DROP TABLE IF EXISTS subscriptions`;
     console.log(`Dropped "subscriptions" table`);
 
@@ -55,6 +15,8 @@ async function seedSubscriptions() {
     const createTable = await sql`
     CREATE TABLE IF NOT EXISTS subscriptions (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    userId NUMERIC NOT NULL,
+    userName TEXT NOT NULL,
     endpoint TEXT NOT NULL,
     expirationTime timestamp,
     keys JSON NOT NULL
@@ -67,9 +29,11 @@ async function seedSubscriptions() {
     if (seed) {
       // Insert data into the "subscriptions" table
       for (const sub of subscriptions) {
+        const { userId, userName, endpoint, expirationTime, keys } = sub;
+
         insertedSubscriptions.push(await sql`
-        INSERT INTO subscriptions (endpoint, expirationTime, keys)
-        VALUES (${sub.endpoint}, ${sub.expirationTime}, ${sub.keys})
+        INSERT INTO subscriptions (userId, userName, endpoint, expirationTime, keys)
+        VALUES (${userId}, ${userName}, ${endpoint}, ${expirationTime}, ${keys})
         ON CONFLICT (id) DO NOTHING;`,);
       }
 
@@ -84,6 +48,5 @@ async function seedSubscriptions() {
 }
 
 (async () => {
-  await seedUsers();
   await seedSubscriptions();
 })();

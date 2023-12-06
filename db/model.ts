@@ -7,14 +7,10 @@ export interface ISubscriptionsTable {
   endpoint: string
   expirationTime: string
   keys: ISubscriptionKey
-}
-
-export interface IUsersTable {
-  name: string
-  data: string
+  userId: number
+  userName: string
 }
 
 export interface Database {
   subscriptions: ISubscriptionsTable;
-  users: IUsersTable;
 }

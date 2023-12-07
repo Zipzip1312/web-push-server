@@ -15,8 +15,8 @@ async function seedSubscriptions() {
     const createTable = await sql`
     CREATE TABLE IF NOT EXISTS subscriptions (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    userId NUMERIC NOT NULL,
-    userName TEXT NOT NULL,
+    userid NUMERIC NOT NULL,
+    username TEXT NOT NULL,
     endpoint TEXT NOT NULL,
     expirationTime timestamp,
     keys JSON NOT NULL
@@ -29,11 +29,11 @@ async function seedSubscriptions() {
     if (seed) {
       // Insert data into the "subscriptions" table
       for (const sub of subscriptions) {
-        const { userId, userName, endpoint, expirationTime, keys } = sub;
+        const { userid, username, endpoint, expirationTime, keys } = sub;
 
         insertedSubscriptions.push(await sql`
-        INSERT INTO subscriptions (userId, userName, endpoint, expirationTime, keys)
-        VALUES (${userId}, ${userName}, ${endpoint}, ${expirationTime}, ${keys})
+        INSERT INTO subscriptions (userid, username, endpoint, expirationTime, keys)
+        VALUES (${userid}, ${username}, ${endpoint}, ${expirationTime}, ${keys})
         ON CONFLICT (id) DO NOTHING;`,);
       }
 

@@ -4,8 +4,8 @@ import { sql } from '@vercel/postgres';
 import { Database } from '../../../db/model';
 
 interface IMessageRecipient {
-  userId: number
-  userName: string
+  userid: number
+  username: string
   message: string
 }
 
@@ -31,15 +31,15 @@ export async function POST(proxyRequest: Request) {
       throw "Subscription must have endpoint.";
     }
 
-    if (!subscription?.userId || !subscription?.userName) {
+    if (!subscription?.userid || !subscription?.username) {
       throw "No User Data provided!";
     }
 
-    const { userId, userName, endpoint, expirationTime, keys } = subscription;
+    const { userid, username, endpoint, expirationTime, keys } = subscription;
 
     await sql`
-        INSERT INTO subscriptions (userId, userName, endpoint, expirationTime, keys)
-        VALUES (${userId}, ${userName}, ${endpoint}, ${expirationTime}, ${keys})
+        INSERT INTO subscriptions (userid, username, endpoint, expirationTime, keys)
+        VALUES (${userid}, ${username}, ${endpoint}, ${expirationTime}, ${keys})
         ON CONFLICT (id) DO NOTHING;
       `
 

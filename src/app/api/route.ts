@@ -3,12 +3,29 @@ import { createKysely } from '@vercel/postgres-kysely';
 import { sql } from '@vercel/postgres';
 import { Database } from '../../../db/model';
 
+interface IMessageRecipient {
+  userId: number
+  userName: string
+  message: string
+}
+
 const db = createKysely<Database>();
 const webpush = require('web-push');
 
-export async function POST(request: Request) {
+export async function POST(proxyRequest: Request) {
   try {
-    const subscription = await request.json();
+    const request = await proxyRequest.json();
+    const subscription = request?.subscription;
+    const recipient = request?.recipient;
+
+    if (!subscription && !recipient) {
+      throw "No Subscription or recipient.";
+    }
+
+    if (subscription && recipient) {
+      await sendNotification(subscription, recipient.message);
+      return NextResponse.json({ success: true, recipient });
+    }
 
     if (!subscription?.endpoint) {
       throw "Subscription must have endpoint.";
@@ -35,17 +52,7 @@ export async function POST(request: Request) {
 
 export async function GET(request: NextRequest) {
   try {
-    const url = new URL(request.url);
-    const message = url?.searchParams?.get('message');
     const subscriptions = await db.selectFrom('subscriptions').selectAll().execute()
-
-    if (message) {
-      for (let i = 0; i < subscriptions.length; i++) {
-        await sendNotification(subscriptions[i], message)
-      }
-
-      return NextResponse.json({ success: true, recipients: subscriptions.length, message });
-    }
 
     return NextResponse.json({ success: true, subscriptions });
   } catch (err) {

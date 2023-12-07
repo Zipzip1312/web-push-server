@@ -12,19 +12,18 @@ interface IMessageRecipient {
 const db = createKysely<Database>();
 const webpush = require('web-push');
 
-export async function POST(proxyRequest: Request) {
+export async function POST(request: Request) {
   try {
-    const request = await proxyRequest.json();
-    const subscription = request?.subscription;
-    const recipient = request?.recipient;
+    const subscription = await request.json();
+    const message = subscription?.message;
 
-    if (!subscription && !recipient) {
-      throw "No Subscription or recipient.";
+    if (!subscription && !message) {
+      throw "No Subscription or message.";
     }
 
-    if (subscription && recipient) {
-      await sendNotification(subscription, recipient.message);
-      return NextResponse.json({ success: true, recipient });
+    if (subscription && message) {
+      await sendNotification(subscription, message);
+      return NextResponse.json({ success: true, subscription, message });
     }
 
     if (!subscription?.endpoint) {

@@ -16,6 +16,7 @@ export async function POST(request: Request) {
   try {
     const subscription = await request.json();
     const message = subscription?.message;
+    const unsubscribe = subscription?.unsubscribe || false;
 
     if (!subscription && !message) {
       throw "No Subscription or message.";
@@ -42,6 +43,10 @@ export async function POST(request: Request) {
       .executeTakeFirst();
 
     if (subscriber) {
+      if (unsubscribe) {
+        await db.deleteFrom('subscriptions').where('subscriptions.userid', '=', subscription?.userid).execute();
+        return NextResponse.json({ message: `${subscriber.username} has been unsubscribed!`, success: true });
+      }
       return NextResponse.json({ message: "Already subscribed!", success: true });
     }
 

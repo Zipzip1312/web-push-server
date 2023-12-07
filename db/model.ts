@@ -7,8 +7,8 @@ export interface ISubscriptionsTable {
   endpoint: string
   expirationTime: string
   keys: ISubscriptionKey
-  userId: number
-  userName: string
+  userid: number
+  username: string
 }
 
 export interface Database {

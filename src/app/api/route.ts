@@ -34,6 +34,17 @@ export async function POST(request: Request) {
       throw "No User Data provided!";
     }
 
+    // check if already subscribed
+    const subscriber = await db
+      .selectFrom('subscriptions')
+      .selectAll()
+      .where('subscriptions.userid', '=', subscription?.userid)
+      .executeTakeFirst();
+
+    if (subscriber) {
+      return NextResponse.json({ message: "Already subscribed!", success: true });
+    }
+
     const { userid, username, endpoint, expirationTime, keys } = subscription;
 
     await sql`
